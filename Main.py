@@ -13,7 +13,8 @@ def main():
         print("3. Cancel Booking")
         print("4. Get Available Seats")
         print("5. Get Event Details")
-        print("6. Exit")
+        print("6. Calculate Booking cost")
+        print("7. Exit")
 
         choice = input("Enter your choice: ")
 
@@ -38,11 +39,23 @@ def main():
             )
             event_service_provider.create_event(created_event)
         elif choice == "2":
-            # Implement logic to book tickets
-            pass
+            try:
+                event_name = input("Enter event name to book tickets: ")
+                num_tickets = int(input("Enter the number of tickets to book: "))
+                booking_date = input("Enter booking date (YYYY-MM-DD): ")
+                list_of_customers = []
+                # You need to define and populate this list with customer IDs
+                booking_service_provider.book_tickets(
+                    event_name, num_tickets, booking_date, list_of_customers
+                )
+            except Exception as e:
+                print("Error booking tickets:", e)
         elif choice == "3":
-            # Implement logic to cancel booking
-            pass
+            try:
+                booking_id = input("Enter booking ID to cancel: ")
+                booking_service_provider.cancel_booking(booking_id)
+            except Exception as e:
+                print("Error canceling booking:", e)
         elif choice == "4":
             try:
                 available_seats = event_service_provider.getAvailableNoOfTickets()
@@ -58,6 +71,9 @@ def main():
             except Exception as e:
                 print("Error fetching event details:", e)
         elif choice == "6":
+            print("Exiting...")
+            break
+        elif choice == "7":
             print("Exiting...")
             break
         else:
