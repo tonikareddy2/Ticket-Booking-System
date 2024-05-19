@@ -70,7 +70,10 @@ class event_Service_Provider(DBconnection):
 
     def getAvailableNoOfTickets(self):
         try:
-            self.cursor.execute("SELECT SUM(available_seats) FROM Event")
-            return self.cursor.fetchone()[0]
+            self.cursor.execute("SELECT event_name, available_seats FROM Event")
+            events = self.cursor.fetchall()
+            total_available_seats = sum(event[1] for event in events)
+            return events, total_available_seats
         except Exception as e:
             print(e)
+            return [], 0

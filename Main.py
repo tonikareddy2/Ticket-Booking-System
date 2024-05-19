@@ -64,11 +64,15 @@ def main():
                 print("Error canceling booking:", e)
         elif choice == "4":
             try:
-                available_seats = event_service_provider.getAvailableNoOfTickets()
-                if available_seats:
-                    print("\nTotal Available Seats:", available_seats)
+                events, total_available_seats = (
+                    event_service_provider.getAvailableNoOfTickets()
+                )
+                if events:
+                    for event in events:
+                        print(f"Event Name: {event[0]}, Available Seats: {event[1]}")
+                    print(f"\nTotal Available Seats: {total_available_seats}")
                 else:
-                    print("No available seats found.")
+                    print("No events found.")
             except Exception as e:
                 print("Error fetching available seats:", e)
         elif choice == "5":
