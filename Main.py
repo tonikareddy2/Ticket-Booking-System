@@ -19,23 +19,25 @@ def main():
         choice = input("Enter your choice: ")
 
         if choice == "1":
+            event_id = int(input("Enter event ID: "))
             event_name = input("Enter event name: ")
             event_date = input("Enter event date (YYYY-MM-DD): ")
             event_time = input("Enter event time (HH:MM:SS): ")
+            Venue.venue_id = int(input("Enter venue id:"))
             total_seats = int(input("Enter total number of seats: "))
             available_seats = int(input("Enter the available seats:"))
             ticket_price = float(input("Enter ticket price: "))
             event_type = input("Enter event type (Movie/Sports/Concert): ")
-            Venue.venue_id = input("Enter venue id:")
             created_event = Event(
+                event_id,
                 event_name,
                 event_date,
                 event_time,
+                Venue.venue_id,
                 total_seats,
                 available_seats,
                 ticket_price,
                 event_type,
-                Venue.venue_id,
             )
             event_service_provider.create_event(created_event)
         elif choice == "2":
@@ -44,7 +46,6 @@ def main():
                 num_tickets = int(input("Enter the number of tickets to book: "))
                 booking_date = input("Enter booking date (YYYY-MM-DD): ")
                 list_of_customers = []
-                # You need to define and populate this list with customer IDs
                 booking_service_provider.book_tickets(
                     event_name, num_tickets, booking_date, list_of_customers
                 )
@@ -71,8 +72,14 @@ def main():
             except Exception as e:
                 print("Error fetching event details:", e)
         elif choice == "6":
-            print("Exiting...")
-            break
+            try:
+                num_tickets = int(input("Enter the number of tickets: "))
+                total_cost = booking_service_provider.calculate_booking_cost(
+                    num_tickets
+                )
+                print(f"The total cost for {num_tickets} tickets is: {total_cost}")
+            except Exception as e:
+                print("Error calculating booking cost:", e)
         elif choice == "7":
             print("Exiting...")
             break

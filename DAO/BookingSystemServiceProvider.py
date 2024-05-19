@@ -33,9 +33,19 @@ class BookingSystemProvider(DBconnection):
     def book_tickets(self, event_name, num_tickets, booking_date, list_of_customers):
         try:
             self.cursor.execute(
-                "SELECT event_id FROM Event WHERE event_name = ?", (event_name,)
+                "SELECT event_id, available_seats FROM Event WHERE event_name = ?",
+                (event_name,),
             )
-            event_id = self.cursor.fetchone()[0]
+            event_details = self.cursor.fetchone()
+            if not event_details:
+                print("Event not found!")
+                return
+
+            event_id, available_seats = event_details
+            if available_seats < num_tickets:
+                print("Not enough available seats!")
+                return
+
             for customer_id in list_of_customers:
                 total_cost = self.calculate_booking_cost(num_tickets)
                 self.cursor.execute(
@@ -46,6 +56,14 @@ class BookingSystemProvider(DBconnection):
                     (customer_id, event_id, num_tickets, total_cost, booking_date),
                 )
                 self.conn.commit()
+
+            # Update the available seats in the Event table
+            new_available_seats = available_seats - num_tickets
+            self.cursor.execute(
+                "UPDATE Event SET available_seats = ? WHERE event_id = ?",
+                (new_available_seats, event_id),
+            )
+            self.conn.commit()
 
             print("Tickets booked successfully!")
         except Exception as e:

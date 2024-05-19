@@ -8,22 +8,23 @@ class event_Service_Provider(DBconnection):
         try:
             self.cursor.execute(
                 """
-                INSERT INTO Event (event_name, event_date, event_time, total_seats, available_seats, ticket_price, event_type, venue_id)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO Event (event_id, event_name, event_date, event_time, venue_id, total_seats, available_seats, ticket_price, event_type)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
+                    Event.event_id,
                     Event.event_name,
                     Event.event_date,
                     Event.event_time,
+                    Event.venue_id,
                     Event.total_seats,
                     Event.available_seats,
                     Event.ticket_price,
                     Event.event_type,
-                    Venue.venue_id,
                 ),
             )
             self.conn.commit()
-            print("event created successfully")
+            print("Event created successfully")
         except Exception as e:
             print(e)
 
@@ -43,14 +44,27 @@ class event_Service_Provider(DBconnection):
                 event_type = "Sports"
             else:
                 print("Invalid choice. Please enter a valid option.")
-
+                return
             self.cursor.execute(
                 "SELECT * FROM Event WHERE event_type = ?", (event_type,)
             )
-            event = self.cursor.fetchall()
-            for event in Event:
-                print(event)
-
+            events = self.cursor.fetchall()
+            if events:
+                for event in events:
+                    event_instance = Event(
+                        event_id=event[0],
+                        event_name=event[1],
+                        event_date=event[2],
+                        event_time=event[3],
+                        venue_id=event[4],
+                        total_seats=event[5],
+                        available_seats=event[6],
+                        ticket_price=event[7],
+                        event_type=event[8],
+                    )
+                    event_instance.display_event_details()
+            else:
+                print("No events found")
         except Exception as e:
             print(e)
 
