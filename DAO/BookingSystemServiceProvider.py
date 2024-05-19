@@ -30,32 +30,48 @@ class BookingSystemProvider(DBconnection):
         except Exception as e:
             print(e)
 
-    def book_tickets(self, event_name, num_tickets, booking_date, list_of_customers):
+    def book_tickets(self, event_id, num_tickets, booking_date, list_of_customers):
         try:
+            # Retrieve event details
             self.cursor.execute(
-                "SELECT event_id, available_seats FROM Event WHERE event_name = ?",
-                (event_name,),
+                "SELECT available_seats FROM Event WHERE event_id = ?", (event_id,)
             )
             event_details = self.cursor.fetchone()
             if not event_details:
                 print("Event not found!")
                 return
 
-            event_id, available_seats = event_details
+            available_seats = event_details[0]
             if available_seats < num_tickets:
                 print("Not enough available seats!")
                 return
 
+            # Calculate total cost for booking
+            total_cost = self.calculate_booking_cost(num_tickets)
+
+            # Generate a new booking_id
+            self.cursor.execute("SELECT MAX(booking_id) FROM Booking")
+            max_booking_id = self.cursor.fetchone()[0]
+            new_booking_id = max_booking_id + 1 if max_booking_id is not None else 1
+
+            # Book tickets for each customer in the list
             for customer_id in list_of_customers:
-                total_cost = self.calculate_booking_cost(num_tickets)
                 self.cursor.execute(
                     """
-                    INSERT INTO Booking (customer_id, event_id, num_tickets, total_cost, booking_date)
-                    VALUES (?, ?, ?, ?, ?)
+                    INSERT INTO Booking (booking_id, customer_id, event_id, num_tickets, total_cost, booking_date)
+                    VALUES (?, ?, ?, ?, ?, ?)
                     """,
-                    (customer_id, event_id, num_tickets, total_cost, booking_date),
+                    (
+                        new_booking_id,
+                        customer_id,
+                        event_id,
+                        num_tickets,
+                        total_cost,
+                        booking_date,
+                    ),
                 )
                 self.conn.commit()
+                new_booking_id += 1  # Increment for the next customer
 
             # Update the available seats in the Event table
             new_available_seats = available_seats - num_tickets
@@ -71,22 +87,31 @@ class BookingSystemProvider(DBconnection):
 
     def cancel_booking(self, booking_id):
         try:
+            # Retrieve booking details
             self.cursor.execute(
-                "SELECT * FROM Booking WHERE booking_id = ?", (booking_id,)
+                "SELECT event_id, num_tickets FROM Booking WHERE booking_id = ?",
+                (booking_id,),
             )
             booking_details = self.cursor.fetchone()
 
             if not booking_details:
                 print("Booking not found!")
                 return
+
+            event_id, num_tickets = booking_details
+
+            # Update the available seats in the Event table
             self.cursor.execute(
                 """
                 UPDATE Event
                 SET available_seats = available_seats + ?
                 WHERE event_id = ?
                 """,
-                (booking_details[3], booking_details[2]),
+                (num_tickets, event_id),
             )
+            self.conn.commit()
+
+            # Delete the booking record
             self.cursor.execute(
                 "DELETE FROM Booking WHERE booking_id = ?", (booking_id,)
             )

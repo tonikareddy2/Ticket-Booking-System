@@ -42,12 +42,17 @@ def main():
             event_service_provider.create_event(created_event)
         elif choice == "2":
             try:
-                event_name = input("Enter event name to book tickets: ")
+                event_id = int(input("Enter event ID to book tickets: "))
                 num_tickets = int(input("Enter the number of tickets to book: "))
                 booking_date = input("Enter booking date (YYYY-MM-DD): ")
-                list_of_customers = []
+                list_of_customers = input(
+                    "Enter customer IDs (comma-separated): "
+                ).split(",")
+                list_of_customers = [
+                    int(customer_id) for customer_id in list_of_customers
+                ]
                 booking_service_provider.book_tickets(
-                    event_name, num_tickets, booking_date, list_of_customers
+                    event_id, num_tickets, booking_date, list_of_customers
                 )
             except Exception as e:
                 print("Error booking tickets:", e)
