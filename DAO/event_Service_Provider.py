@@ -1,6 +1,7 @@
 from Util.DBconn import DBconnection
 from Entity import Event, Venue
 from Interface import IEvent_Service_Provider
+from Exceptions.Myexceptions import EventNotFoundException
 
 
 class event_Service_Provider(DBconnection, IEvent_Service_Provider):
@@ -65,7 +66,7 @@ class event_Service_Provider(DBconnection, IEvent_Service_Provider):
                     )
                     event_instance.display_event_details()
             else:
-                print("No events found")
+                raise EventNotFoundException(event_type)
         except Exception as e:
             print(e)
 

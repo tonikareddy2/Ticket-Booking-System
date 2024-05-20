@@ -1,6 +1,7 @@
 from Util.DBconn import DBconnection
 from Entity import Booking
 from Interface import IBooking_system_service_provider
+from Exceptions.Myexceptions import EventNotFoundException, InvalidBookingIDException
 
 
 class Booking_System_Provider(DBconnection, IBooking_system_service_provider):
@@ -39,8 +40,7 @@ class Booking_System_Provider(DBconnection, IBooking_system_service_provider):
             )
             event_details = self.cursor.fetchone()
             if not event_details:
-                print("Event not found!")
-                return
+                raise EventNotFoundException(event_id)
 
             available_seats = event_details[0]
             if available_seats < num_tickets:
@@ -96,8 +96,7 @@ class Booking_System_Provider(DBconnection, IBooking_system_service_provider):
             booking_details = self.cursor.fetchone()
 
             if not booking_details:
-                print("Booking not found!")
-                return
+                raise InvalidBookingIDException(booking_id)
 
             event_id, num_tickets = booking_details
 
@@ -132,6 +131,6 @@ class Booking_System_Provider(DBconnection, IBooking_system_service_provider):
                 booking = Booking(*booking_details)
                 return booking
             else:
-                print("Booking not found!")
+                raise InvalidBookingIDException(booking_id)
         except Exception as e:
             print(e)
