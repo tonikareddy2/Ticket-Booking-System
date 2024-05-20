@@ -1,8 +1,9 @@
 from Util.DBconn import DBconnection
 from Entity import Event, Venue
+from Interface import IEvent_Service_Provider
 
 
-class event_Service_Provider(DBconnection):
+class event_Service_Provider(DBconnection, IEvent_Service_Provider):
 
     def create_event(self, Event):
         try:
@@ -28,7 +29,7 @@ class event_Service_Provider(DBconnection):
         except Exception as e:
             print(e)
 
-    def getEventDetails(self):
+    def get_Event_Details(self):
         try:
             print("Select the type of event details you want to see:")
             print("1. Movie event details")
@@ -68,7 +69,7 @@ class event_Service_Provider(DBconnection):
         except Exception as e:
             print(e)
 
-    def getAvailableNoOfTickets(self):
+    def get_Available_No_Of_Tickets(self):
         try:
             self.cursor.execute("SELECT event_name, available_seats FROM Event")
             events = self.cursor.fetchall()

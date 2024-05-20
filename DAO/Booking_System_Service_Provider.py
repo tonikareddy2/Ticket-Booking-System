@@ -1,8 +1,9 @@
 from Util.DBconn import DBconnection
 from Entity import Booking
+from Interface import IBooking_system_service_provider
 
 
-class BookingSystemProvider(DBconnection):
+class Booking_System_Provider(DBconnection, IBooking_system_service_provider):
 
     def calculate_booking_cost(self, num_tickets):
         try:

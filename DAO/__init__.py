@@ -1,2 +1,2 @@
-from .BookingSystemServiceProvider import BookingSystemProvider
+from .Booking_System_Service_Provider import Booking_System_Provider
 from .event_Service_Provider import event_Service_Provider

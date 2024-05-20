@@ -1,10 +1,10 @@
 from Entity import Booking, Customer, Event, Venue
-from DAO import event_Service_Provider, BookingSystemProvider
+from DAO import event_Service_Provider, Booking_System_Provider
 
 
 def main():
     event_service_provider = event_Service_Provider()
-    booking_service_provider = BookingSystemProvider()
+    booking_service_provider = Booking_System_Provider()
 
     while True:
         print("\nTicket Booking System Menu:")
@@ -65,7 +65,7 @@ def main():
         elif choice == "4":
             try:
                 events, total_available_seats = (
-                    event_service_provider.getAvailableNoOfTickets()
+                    event_service_provider.get_Available_No_Of_Tickets()
                 )
                 if events:
                     for event in events:
@@ -77,7 +77,7 @@ def main():
                 print("Error fetching available seats:", e)
         elif choice == "5":
             try:
-                event_service_provider.getEventDetails()
+                event_service_provider.get_Event_Details()
             except Exception as e:
                 print("Error fetching event details:", e)
         elif choice == "6":
